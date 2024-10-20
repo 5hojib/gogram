@@ -307,7 +307,7 @@ func getFileName(f interface{}) string {
 			case *DocumentAttributeFilename:
 				return attr.FileName
 			case *DocumentAttributeAudio:
-				return attr.Title + ".mp3"
+				return attr.FileName
 			case *DocumentAttributeVideo:
 				return fmt.Sprintf("video_%s_%d.mp4", time.Now().Format("2006-01-02_15-04-05"), rand.Intn(1000))
 			case *DocumentAttributeAnimated:
