@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://github.com/amarnathcjd/gogram">
+    <a href="https://github.com/5hojib/gogram">
         <img src="https://i.imgur.com/RE1M0sM.png" alt="Gogram" width="256">
     </a>
     <br>
@@ -8,27 +8,27 @@
     <b>
     <a href="https://gogramd.vercel.app">documentation</a>
     &nbsp;•&nbsp;
-    <a href="https://github.com/amarnathcjd/gogram/releases">releases</a>
+    <a href="https://github.com/5hojib/gogram/releases">releases</a>
     &nbsp;•&nbsp;
     <a href="https://t.me/rosexchat">telegram chat</a>
     </b>
 </p>
 
 <div align='center'>
-<a href="https://godoc.org/github.com/amarnathcjd/gogram" style='text-decoration: none'>
-    <img src="https://godoc.org/github.com/amarnathcjd/gogram?status.svg" alt="GoDoc">
+<a href="https://godoc.org/github.com/5hojib/gogram" style='text-decoration: none'>
+    <img src="https://godoc.org/github.com/5hojib/gogram?status.svg" alt="GoDoc">
 </a>
-<a href="https://goreportcard.com/report/github.com/amarnathcjd/gogram" style='text-decoration: none'>
-    <img src="https://goreportcard.com/badge/github.com/amarnathcjd/gogram" alt="Go Report Card">
+<a href="https://goreportcard.com/report/github.com/5hojib/gogram" style='text-decoration: none'>
+    <img src="https://goreportcard.com/badge/github.com/5hojib/gogram" alt="Go Report Card">
 </a>
-<a href="https://img.shields.io/github/license/amarnathcjd/gogram.svg" style='text-decoration: none'>
-    <img src="https://img.shields.io/github/license/amarnathcjd/gogram.svg" alt="License">
+<a href="https://img.shields.io/github/license/5hojib/gogram.svg" style='text-decoration: none'>
+    <img src="https://img.shields.io/github/license/5hojib/gogram.svg" alt="License">
 </a>
-<a href="https://img.shields.io/github/stars/amarnathcjd/gogram.svg?style=social&label=Stars" style='text-decoration: none'>
-    <img src="https://img.shields.io/github/stars/amarnathcjd/gogram.svg?style=social&label=Stars" alt="GitHub stars">
+<a href="https://img.shields.io/github/stars/5hojib/gogram.svg?style=social&label=Stars" style='text-decoration: none'>
+    <img src="https://img.shields.io/github/stars/5hojib/gogram.svg?style=social&label=Stars" alt="GitHub stars">
 </a>
-<a href="https://img.shields.io/github/forks/amarnathcjd/gogram.svg?style=social&label=Fork">
-    <img src="https://img.shields.io/github/forks/amarnathcjd/gogram.svg?style=social&label=Fork" alt="GitHub forks">
+<a href="https://img.shields.io/github/forks/5hojib/gogram.svg?style=social&label=Fork">
+    <img src="https://img.shields.io/github/forks/5hojib/gogram.svg?style=social&label=Fork" alt="GitHub forks">
 </a>
 </div>
 
@@ -49,7 +49,7 @@ identity (bot API alternative) using Go.</p>
 <p>please note that gogram requires Go <b>1.18</b> or later to support go-generics</p>
 
 ```bash
-go get -u github.com/amarnathcjd/gogram/telegram
+go get -u github.com/5hojib/gogram/telegram
 ```
 
 ## quick start
@@ -57,7 +57,7 @@ go get -u github.com/amarnathcjd/gogram/telegram
 ```golang
 package main
 
-import "github.com/amarnathcjd/gogram/telegram"
+import "github.com/5hojib/gogram/telegram"
 
 func main() {
 	client, err := telegram.NewClient(telegram.ClientConfig{
@@ -85,7 +85,7 @@ func main() {
 
 If you'd like to support Gogram, you can consider:
 
-- <a href="https://github.com/sponsors/amarnathcjd" style="text-decoration: none; color: green;">become a github sponsor</a>
+- <a href="https://github.com/sponsors/5hojib" style="text-decoration: none; color: green;">become a github sponsor</a>
 - star this repo :)
 
 ## key features

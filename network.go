@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"reflect"
 
-	"github.com/amarnathcjd/gogram/internal/encoding/tl"
-	"github.com/amarnathcjd/gogram/internal/mtproto/messages"
-	"github.com/amarnathcjd/gogram/internal/mtproto/objects"
-	"github.com/amarnathcjd/gogram/internal/session"
-	"github.com/amarnathcjd/gogram/internal/utils"
+	"github.com/5hojib/gogram/internal/encoding/tl"
+	"github.com/5hojib/gogram/internal/mtproto/messages"
+	"github.com/5hojib/gogram/internal/mtproto/objects"
+	"github.com/5hojib/gogram/internal/session"
+	"github.com/5hojib/gogram/internal/utils"
 	"github.com/pkg/errors"
 )
 
