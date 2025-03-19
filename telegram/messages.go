@@ -963,7 +963,6 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 
 	var (
 		messages  []NewMessage
-		skipped   int32
 		inputIDs  []InputMessage
 		result    MessagesMessages
 		addOffset int32 = opt.AddOffset // Ensure AddOffset is an int32
