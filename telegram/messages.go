@@ -962,10 +962,9 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 	}
 
 	var (
-		messages  []NewMessage
-		inputIDs  []InputMessage
-		result    MessagesMessages
-		addOffset int32 = opt.AddOffset // Ensure AddOffset is an int32
+		messages []NewMessage
+		inputIDs []InputMessage
+		result   MessagesMessages
 	)
 
 	switch i := opt.IDs.(type) {
@@ -1026,8 +1025,7 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 					messages = append(messages, *packMessage(c, msg))
 				}
 			}
-
-			if int32(len(messages)) >= opt.Limit {
+			if len(messages) >= int(opt.Limit) {
 				return messages[:opt.Limit], nil
 			}
 			time.Sleep(time.Duration(opt.SleepThresholdMs) * time.Millisecond)
@@ -1038,16 +1036,17 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 		}
 
 		params := &MessagesSearchParams{
-			Peer:     peer,
-			Q:        opt.Query,
-			OffsetID: opt.Offset,
-			Filter:   opt.Filter,
-			MinDate:  opt.MinDate,
-			MaxDate:  opt.MaxDate,
-			MinID:    opt.MinID,
-			MaxID:    opt.MaxID,
-			Limit:    opt.Limit,
-			TopMsgID: opt.TopMsgID,
+			Peer:      peer,
+			Q:         opt.Query,
+			OffsetID:  opt.Offset,
+			AddOffset: opt.AddOffset,
+			Filter:    opt.Filter,
+			MinDate:   opt.MinDate,
+			MaxDate:   opt.MaxDate,
+			MinID:     opt.MinID,
+			MaxID:     opt.MaxID,
+			Limit:     opt.Limit,
+			TopMsgID:  opt.TopMsgID,
 		}
 
 		if opt.FromUser != nil {
@@ -1059,12 +1058,12 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 		}
 
 		for {
-			remaining := opt.Limit - int32(len(messages))
+			remaining := int(opt.Limit) - len(messages)
 			if remaining <= 0 {
 				break
 			}
 
-			perReqLimit := min(remaining+addOffset, 100) // Fetch more messages to accommodate AddOffset
+			perReqLimit := min(int32(remaining), 100)
 			params.Limit = perReqLimit
 
 			result, err = c.MessagesSearch(params)
@@ -1098,33 +1097,12 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				break
 			}
 
-			// Apply AddOffset across multiple fetches
-			if addOffset > 0 {
-				if addOffset >= int32(len(fetchedMessages)) {
-					// Skip all fetched messages if AddOffset is still greater
-					addOffset -= int32(len(fetchedMessages))
-					continue
-				} else {
-					// Otherwise, start adding messages after skipping AddOffset count
-					fetchedMessages = fetchedMessages[addOffset:]
-					addOffset = 0
-				}
-			}
-
-			// Append only the required number of messages
-			remaining = opt.Limit - int32(len(messages))
-			if int32(len(fetchedMessages)) > remaining {
-				fetchedMessages = fetchedMessages[:remaining]
-			}
-
 			messages = append(messages, fetchedMessages...)
-
-			// Stop if we've collected enough messages
-			if int32(len(messages)) >= opt.Limit {
+			if len(messages) >= int(opt.Limit) {
+				messages = messages[:opt.Limit]
 				break
 			}
 
-			// Prepare for the next batch
 			params.OffsetID = fetchedMessages[len(fetchedMessages)-1].ID
 			params.MaxDate = fetchedMessages[len(fetchedMessages)-1].Date()
 
