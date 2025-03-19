@@ -1064,7 +1064,7 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				break
 			}
 
-			perReqLimit := min(remaining+addOffset, 100) // Adjusting request size to include AddOffset
+			perReqLimit := min(remaining+addOffset, 100) // Adjust request size to accommodate AddOffset
 			params.Limit = perReqLimit
 
 			result, err = c.MessagesSearch(params)
@@ -1098,14 +1098,14 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				break
 			}
 
-			// Apply AddOffset skipping, ensuring no out-of-bounds errors
+			// Apply AddOffset safely
 			if addOffset > 0 {
-				if int32(len(fetchedMessages)) <= addOffset {
-					// Skip all messages in this batch
+				if addOffset >= int32(len(fetchedMessages)) {
+					// If addOffset is larger than fetched messages, skip them all
 					addOffset -= int32(len(fetchedMessages))
 					continue
 				} else {
-					// Skip only the required amount
+					// Otherwise, skip only the required number of messages
 					fetchedMessages = fetchedMessages[addOffset:]
 					addOffset = 0
 				}
@@ -1117,11 +1117,8 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				break
 			}
 
-			// Ensure we don't access an empty slice
-			if len(fetchedMessages) > 0 {
-				params.OffsetID = fetchedMessages[len(fetchedMessages)-1].ID
-				params.MaxDate = fetchedMessages[len(fetchedMessages)-1].Date()
-			}
+			params.OffsetID = fetchedMessages[len(fetchedMessages)-1].ID
+			params.MaxDate = fetchedMessages[len(fetchedMessages)-1].Date()
 
 			time.Sleep(time.Duration(opt.SleepThresholdMs) * time.Millisecond)
 		}
