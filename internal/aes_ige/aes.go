@@ -9,7 +9,7 @@ import (
 	"crypto/sha256"
 	"math/big"
 
-	"github.com/amarnathcjd/gogram/internal/utils"
+	"github.com/5hojib/gogram/internal/utils"
 	"github.com/pkg/errors"
 )
 

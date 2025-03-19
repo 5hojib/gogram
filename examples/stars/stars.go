@@ -3,7 +3,7 @@ package examples
 import (
 	"fmt"
 
-	"github.com/amarnathcjd/gogram/telegram"
+	"github.com/5hojib/gogram/telegram"
 )
 
 var paidUsers = make(map[int64]int32)

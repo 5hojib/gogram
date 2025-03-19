@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/amarnathcjd/gogram"
+	"github.com/5hojib/gogram"
 	"github.com/pkg/errors"
 )
 
@@ -1052,6 +1052,9 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 
 		for {
 			remaining := opt.Limit - int32(len(messages))
+			if remaining <= 0 {
+				break
+			}
 			perReqLimit := min(remaining, int32(100))
 			params.Limit = perReqLimit
 
@@ -1062,42 +1065,35 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				}
 				return nil, err
 			}
+
+			messagesLenBefore := len(messages)
+
 			switch result := result.(type) {
 			case *MessagesChannelMessages:
-				if result.Count == 0 {
-					return messages, nil
-				}
-
 				c.Cache.UpdatePeersToCache(result.Users, result.Chats)
 				for _, msg := range result.Messages {
 					messages = append(messages, *packMessage(c, msg))
 				}
 			case *MessagesMessagesObj:
-				if len(result.Messages) == 0 {
-					return messages, nil
-				}
-
 				c.Cache.UpdatePeersToCache(result.Users, result.Chats)
 				for _, msg := range result.Messages {
 					messages = append(messages, *packMessage(c, msg))
 				}
 			case *MessagesMessagesSlice:
-				if result.Count == 0 {
-					return messages, nil
-				}
-
 				c.Cache.UpdatePeersToCache(result.Users, result.Chats)
 				for _, msg := range result.Messages {
 					messages = append(messages, *packMessage(c, msg))
 				}
 			}
 
-			if (len(messages) >= int(opt.Limit) || len(messages) == 0) && opt.Limit > 0 {
+			if len(messages) == messagesLenBefore {
 				break
 			}
 
-			params.OffsetID = messages[len(messages)-1].ID
-			params.MaxDate = messages[len(messages)-1].Date()
+			if len(messages) > 0 {
+				params.OffsetID = messages[len(messages)-1].ID
+				params.MaxDate = messages[len(messages)-1].Date()
+			}
 
 			time.Sleep(time.Duration(opt.SleepThresholdMs) * time.Millisecond)
 		}

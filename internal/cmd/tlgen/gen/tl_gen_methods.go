@@ -11,7 +11,7 @@ import (
 
 	"github.com/dave/jennifer/jen"
 
-	"github.com/amarnathcjd/gogram/internal/cmd/tlgen/tlparser"
+	"github.com/5hojib/gogram/internal/cmd/tlgen/tlparser"
 )
 
 var maximumPositionalArguments = 5

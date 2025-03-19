@@ -1,4 +1,4 @@
-// Copyright (c) 2024, amarnathcjd
+// Copyright (c) 2024, 5hojib
 
 package telegram
 
@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/amarnathcjd/gogram/internal/utils"
+	"github.com/5hojib/gogram/internal/utils"
 	"github.com/pkg/errors"
 )
 

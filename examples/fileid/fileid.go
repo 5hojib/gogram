@@ -1,13 +1,13 @@
 package examples
 
 import (
-	"github.com/amarnathcjd/gogram/telegram"
+	"github.com/5hojib/gogram/telegram"
 )
 
-// https://gist.github.com/AmarnathCJD/824907f8ec9e7aa9cec8278937fc437b
+// https://gist.github.com/5hojib/824907f8ec9e7aa9cec8278937fc437b
 // use this code to convert bot-api file id to gogram file id
 
-// https://gist.github.com/AmarnathCJD/27626c8fc1b5d5234576d1eecb5d651f
+// https://gist.github.com/5hojib/27626c8fc1b5d5234576d1eecb5d651f
 // use this code to convert pyrogram file id to gogram file id
 
 const (
