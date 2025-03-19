@@ -939,6 +939,7 @@ type SearchOption struct {
 	IDs              any            // IDs of the messages to get (bots can use)
 	Query            string         // query to search for
 	FromUser         any            // ID of the user to search from
+	AddOffset        int32          // Sequential number of the first message to be returned
 	Offset           int32          // offset of the message to search from
 	Limit            int32          // limit of the messages to get
 	Filter           MessagesFilter // filter to use
@@ -961,9 +962,11 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 	}
 
 	var (
-		messages []NewMessage
-		inputIDs []InputMessage
-		result   MessagesMessages
+		messages  []NewMessage
+		skipped   int
+		inputIDs  []InputMessage
+		result    MessagesMessages
+		addOffset = opt.AddOffset // New parameter to skip messages
 	)
 
 	switch i := opt.IDs.(type) {
@@ -1024,6 +1027,7 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 					messages = append(messages, *packMessage(c, msg))
 				}
 			}
+
 			if len(messages) >= int(opt.Limit) {
 				return messages[:opt.Limit], nil
 			}
@@ -1061,7 +1065,7 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				break
 			}
 
-			perReqLimit := min(int32(remaining), 100)
+			perReqLimit := min(int32(remaining+addOffset), 100) // Adjusting request size to include AddOffset
 			params.Limit = perReqLimit
 
 			result, err = c.MessagesSearch(params)
@@ -1093,6 +1097,13 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 
 			if len(fetchedMessages) == 0 {
 				break
+			}
+
+			// Apply AddOffset skipping
+			if addOffset > 0 {
+				skipCount := min(addOffset, len(fetchedMessages))
+				fetchedMessages = fetchedMessages[skipCount:]
+				addOffset -= skipCount
 			}
 
 			messages = append(messages, fetchedMessages...)
