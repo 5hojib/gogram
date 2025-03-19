@@ -963,10 +963,10 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 
 	var (
 		messages  []NewMessage
-		skipped   int
+		skipped   int32
 		inputIDs  []InputMessage
 		result    MessagesMessages
-		addOffset = opt.AddOffset // New parameter to skip messages
+		addOffset int32 = opt.AddOffset // Ensure AddOffset is an int32
 	)
 
 	switch i := opt.IDs.(type) {
@@ -1028,7 +1028,7 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				}
 			}
 
-			if len(messages) >= int(opt.Limit) {
+			if int32(len(messages)) >= opt.Limit {
 				return messages[:opt.Limit], nil
 			}
 			time.Sleep(time.Duration(opt.SleepThresholdMs) * time.Millisecond)
@@ -1060,12 +1060,12 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 		}
 
 		for {
-			remaining := int(opt.Limit) - len(messages)
+			remaining := opt.Limit - int32(len(messages))
 			if remaining <= 0 {
 				break
 			}
 
-			perReqLimit := min(int32(remaining+addOffset), 100) // Adjusting request size to include AddOffset
+			perReqLimit := min(remaining+addOffset, 100) // Adjusting request size to include AddOffset
 			params.Limit = perReqLimit
 
 			result, err = c.MessagesSearch(params)
@@ -1101,13 +1101,13 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 
 			// Apply AddOffset skipping
 			if addOffset > 0 {
-				skipCount := min(addOffset, len(fetchedMessages))
+				skipCount := min(addOffset, int32(len(fetchedMessages)))
 				fetchedMessages = fetchedMessages[skipCount:]
 				addOffset -= skipCount
 			}
 
 			messages = append(messages, fetchedMessages...)
-			if len(messages) >= int(opt.Limit) {
+			if int32(len(messages)) >= opt.Limit {
 				messages = messages[:opt.Limit]
 				break
 			}
