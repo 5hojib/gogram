@@ -960,11 +960,13 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 	if err != nil {
 		return nil, err
 	}
+
 	var (
 		messages []NewMessage
 		inputIDs []InputMessage
 		result   MessagesMessages
 	)
+
 	switch i := opt.IDs.(type) {
 	case []int32, []int64, []int:
 		var ids []int32
@@ -992,9 +994,11 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 	case *InputMessageCallbackQuery:
 		inputIDs = append(inputIDs, &InputMessageCallbackQuery{ID: i.ID})
 	}
+
 	if len(inputIDs) == 0 && opt.Query == "" && opt.Limit == 0 {
 		opt.Limit = 1
 	}
+
 	if len(inputIDs) > 0 {
 		var chunkedIds = splitIDsIntoChunks(inputIDs, 100)
 		for _, ids := range chunkedIds {
@@ -1052,9 +1056,6 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 
 		for {
 			remaining := opt.Limit - int32(len(messages))
-			if remaining <= 0 {
-				break
-			}
 			perReqLimit := min(remaining, int32(100))
 			params.Limit = perReqLimit
 
@@ -1066,38 +1067,42 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				return nil, err
 			}
 
-			messagesLenBefore := len(messages)
-
+			var fetchedMessages []NewMessage
 			switch result := result.(type) {
 			case *MessagesChannelMessages:
 				c.Cache.UpdatePeersToCache(result.Users, result.Chats)
 				for _, msg := range result.Messages {
-					messages = append(messages, *packMessage(c, msg))
+					fetchedMessages = append(fetchedMessages, *packMessage(c, msg))
 				}
 			case *MessagesMessagesObj:
 				c.Cache.UpdatePeersToCache(result.Users, result.Chats)
 				for _, msg := range result.Messages {
-					messages = append(messages, *packMessage(c, msg))
+					fetchedMessages = append(fetchedMessages, *packMessage(c, msg))
 				}
 			case *MessagesMessagesSlice:
 				c.Cache.UpdatePeersToCache(result.Users, result.Chats)
 				for _, msg := range result.Messages {
-					messages = append(messages, *packMessage(c, msg))
+					fetchedMessages = append(fetchedMessages, *packMessage(c, msg))
 				}
 			}
 
-			if len(messages) == messagesLenBefore {
+			if len(fetchedMessages) == 0 {
 				break
 			}
 
-			if len(messages) > 0 {
-				params.OffsetID = messages[len(messages)-1].ID
-				params.MaxDate = messages[len(messages)-1].Date()
+			messages = append(messages, fetchedMessages...)
+
+			if len(messages) >= int(opt.Limit) || len(fetchedMessages) < 100 {
+				break
 			}
+
+			params.OffsetID = fetchedMessages[len(fetchedMessages)-1].ID
+			params.MaxDate = fetchedMessages[len(fetchedMessages)-1].Date()
 
 			time.Sleep(time.Duration(opt.SleepThresholdMs) * time.Millisecond)
 		}
 	}
+
 	return messages, nil
 }
 
