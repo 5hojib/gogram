@@ -1098,11 +1098,17 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				break
 			}
 
-			// Apply AddOffset skipping
+			// Apply AddOffset skipping, ensuring no out-of-bounds errors
 			if addOffset > 0 {
-				skipCount := min(addOffset, int32(len(fetchedMessages)))
-				fetchedMessages = fetchedMessages[skipCount:]
-				addOffset -= skipCount
+				if int32(len(fetchedMessages)) <= addOffset {
+					// Skip all messages in this batch
+					addOffset -= int32(len(fetchedMessages))
+					continue
+				} else {
+					// Skip only the required amount
+					fetchedMessages = fetchedMessages[addOffset:]
+					addOffset = 0
+				}
 			}
 
 			messages = append(messages, fetchedMessages...)
@@ -1111,8 +1117,11 @@ func (c *Client) GetMessages(PeerID any, Opts ...*SearchOption) ([]NewMessage, e
 				break
 			}
 
-			params.OffsetID = fetchedMessages[len(fetchedMessages)-1].ID
-			params.MaxDate = fetchedMessages[len(fetchedMessages)-1].Date()
+			// Ensure we don't access an empty slice
+			if len(fetchedMessages) > 0 {
+				params.OffsetID = fetchedMessages[len(fetchedMessages)-1].ID
+				params.MaxDate = fetchedMessages[len(fetchedMessages)-1].Date()
+			}
 
 			time.Sleep(time.Duration(opt.SleepThresholdMs) * time.Millisecond)
 		}
